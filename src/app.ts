@@ -14,6 +14,7 @@ app.use((req, res, next) => {
     'http://localhost:5173',
     'http://localhost:4173',
     'http://127.0.0.1:5173'
+    'https://afrowhite-demo.netlify.app'
   ];
   
   const origin = req.headers.origin;
@@ -62,5 +63,6 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use(globalErrorHandler);
+
 
 export default app;
