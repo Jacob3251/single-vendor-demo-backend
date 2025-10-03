@@ -20,9 +20,8 @@ const sequelize = new Sequelize(
     dialect: "postgres",
     logging: config.NODE_ENV === "development" ? console.log : false,
     dialectOptions: {
-      // Add this for better PostgreSQL compatibility
-      ssl: false
-    }
+      ssl: process.env.DB_SSL === "true" ? { require: true, rejectUnauthorized: false } : false,
+    },
   }
 );
 
