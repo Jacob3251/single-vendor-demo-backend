@@ -1,0 +1,44 @@
+import { z } from "zod";
+export declare const BlogValidations: {
+    createBlogValidationSchema: z.ZodObject<{
+        title: z.ZodString;
+        content: z.ZodString;
+        featuredImage: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        featuredImageAlt: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        slug: z.ZodOptional<z.ZodString>;
+        metaTitle: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        metaDescription: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        metaKeyword: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        canonicalUrl: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        focusKeyword: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        ogTitle: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        ogDescription: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        ogImage: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        ogImageAlt: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        twitterTitle: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        twitterDescription: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        twitterImage: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        authorId: z.ZodString;
+    }, z.core.$strip>;
+    updateBlogValidationSchema: z.ZodObject<{
+        title: z.ZodOptional<z.ZodString>;
+        content: z.ZodOptional<z.ZodString>;
+        featuredImage: z.ZodOptional<z.ZodNullable<z.ZodOptional<z.ZodString>>>;
+        featuredImageAlt: z.ZodOptional<z.ZodNullable<z.ZodOptional<z.ZodString>>>;
+        slug: z.ZodOptional<z.ZodOptional<z.ZodString>>;
+        metaTitle: z.ZodOptional<z.ZodNullable<z.ZodOptional<z.ZodString>>>;
+        metaDescription: z.ZodOptional<z.ZodNullable<z.ZodOptional<z.ZodString>>>;
+        metaKeyword: z.ZodOptional<z.ZodNullable<z.ZodOptional<z.ZodString>>>;
+        canonicalUrl: z.ZodOptional<z.ZodNullable<z.ZodOptional<z.ZodString>>>;
+        focusKeyword: z.ZodOptional<z.ZodNullable<z.ZodOptional<z.ZodString>>>;
+        ogTitle: z.ZodOptional<z.ZodNullable<z.ZodOptional<z.ZodString>>>;
+        ogDescription: z.ZodOptional<z.ZodNullable<z.ZodOptional<z.ZodString>>>;
+        ogImage: z.ZodOptional<z.ZodNullable<z.ZodOptional<z.ZodString>>>;
+        ogImageAlt: z.ZodOptional<z.ZodNullable<z.ZodOptional<z.ZodString>>>;
+        twitterTitle: z.ZodOptional<z.ZodNullable<z.ZodOptional<z.ZodString>>>;
+        twitterDescription: z.ZodOptional<z.ZodNullable<z.ZodOptional<z.ZodString>>>;
+        twitterImage: z.ZodOptional<z.ZodNullable<z.ZodOptional<z.ZodString>>>;
+        authorId: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>;
+};
+//# sourceMappingURL=blog.validation.d.ts.map
