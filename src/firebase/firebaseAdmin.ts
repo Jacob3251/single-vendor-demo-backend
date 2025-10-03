@@ -3,11 +3,11 @@ import path from 'path';
 
 // This path correctly points from 'src/firebase/' up two levels to the root,
 // and then to your key file.
-const serviceAccountPath = path.join(__dirname, '../../serviceAccountKey.json'); 
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT || '{}');
 
 try {
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccountPath),
+    credential: admin.credential.cert(serviceAccount),
   });
   console.log('Firebase Admin SDK initialized successfully.');
 } catch (error) {
