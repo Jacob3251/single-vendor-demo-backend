@@ -27,7 +27,7 @@ async function main() {
     console.log("✅ Associations setup complete");
 
     // Comment out sync temporarily to test connection
-    // await sequelize.sync({ alter: true });
+    await sequelize.sync({ alter: true });
 
     console.log("✅ Database connection has been established successfully.");
 
