@@ -9,20 +9,22 @@ export const getCurrentSettings = async () => {
   return await SiteSettings.findOne();
 };
 
-// Modified to handle both create and update
 export const updateSettings = async (id: number, data: Partial<any>) => {
   let settings = await SiteSettings.findByPk(id);
   
   // If settings don't exist, create them with the specified ID
   if (!settings) {
+    // When creating, explicitly exclude bannerImages from initial creation
+    const { bannerImages, ...settingsData } = data;
     settings = await SiteSettings.create({
       id: id,
-      ...data
+      ...settingsData,
+      bannerImages: null // Explicitly set to null on creation
     });
     return settings;
   }
   
-  // Validate bannerImages if provided
+  // Validate bannerImages if provided (only when explicitly updating via this endpoint)
   if (data.bannerImages !== undefined) {
     if (data.bannerImages !== null && !Array.isArray(data.bannerImages)) {
       throw new Error("bannerImages must be an array or null");
@@ -65,20 +67,32 @@ export const addBannerImage = async (
   const settings = await SiteSettings.findByPk(settingsId);
   if (!settings) throw new Error("Site settings not found");
 
-  const currentBanners = settings.bannerImages || [];
+  // Get current banners and ensure it's an array
+  const currentBanners: BannerImage[] = Array.isArray(settings.bannerImages) 
+    ? settings.bannerImages 
+    : [];
+    
   const newId = currentBanners.length > 0 
     ? Math.max(...currentBanners.map(b => b.id)) + 1 
     : 1;
 
   const newBanner: BannerImage = {
     id: newId,
-    ...bannerData,
+    imgLink: bannerData.imgLink,
+    altText: bannerData.altText,
   };
 
+  // Create new array with all existing banners plus the new one
+  const updatedBanners = [...currentBanners, newBanner];
+
+  // Update with the new array
   await settings.update({
-    bannerImages: [...currentBanners, newBanner],
+    bannerImages: updatedBanners,
   });
 
+  // Reload to get fresh data
+  await settings.reload();
+  
   return settings;
 };
 
@@ -90,7 +104,10 @@ export const updateBannerImage = async (
   const settings = await SiteSettings.findByPk(settingsId);
   if (!settings) throw new Error("Site settings not found");
 
-  const currentBanners = settings.bannerImages || [];
+  const currentBanners: BannerImage[] = Array.isArray(settings.bannerImages)
+    ? settings.bannerImages
+    : [];
+    
   const bannerIndex = currentBanners.findIndex(b => b.id === bannerId);
   
   if (bannerIndex === -1) {
@@ -108,9 +125,13 @@ export const updateBannerImage = async (
     altText: bannerData.altText ?? existingBanner.altText,
   };
 
-  currentBanners[bannerIndex] = updatedBanner;
+  // Create new array with updated banner
+  const updatedBanners = [...currentBanners];
+  updatedBanners[bannerIndex] = updatedBanner;
 
-  await settings.update({ bannerImages: currentBanners });
+  await settings.update({ bannerImages: updatedBanners });
+  await settings.reload();
+  
   return settings;
 };
 
@@ -121,7 +142,10 @@ export const deleteBannerImage = async (
   const settings = await SiteSettings.findByPk(settingsId);
   if (!settings) throw new Error("Site settings not found");
 
-  const currentBanners = settings.bannerImages || [];
+  const currentBanners: BannerImage[] = Array.isArray(settings.bannerImages)
+    ? settings.bannerImages
+    : [];
+    
   const filteredBanners = currentBanners.filter(b => b.id !== bannerId);
 
   if (filteredBanners.length === currentBanners.length) {
@@ -129,5 +153,7 @@ export const deleteBannerImage = async (
   }
 
   await settings.update({ bannerImages: filteredBanners });
+  await settings.reload();
+  
   return settings;
 };
