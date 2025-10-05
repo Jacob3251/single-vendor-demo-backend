@@ -9,9 +9,18 @@ export const getCurrentSettings = async () => {
   return await SiteSettings.findOne();
 };
 
+// Modified to handle both create and update
 export const updateSettings = async (id: number, data: Partial<any>) => {
-  const settings = await SiteSettings.findByPk(id);
-  if (!settings) throw new Error("Site settings not found");
+  let settings = await SiteSettings.findByPk(id);
+  
+  // If settings don't exist, create them with the specified ID
+  if (!settings) {
+    settings = await SiteSettings.create({
+      id: id,
+      ...data
+    });
+    return settings;
+  }
   
   // Validate bannerImages if provided
   if (data.bannerImages !== undefined) {
@@ -35,6 +44,7 @@ export const updateSettings = async (id: number, data: Partial<any>) => {
     }
   }
   
+  // Update existing settings
   await settings.update(data);
   return settings;
 };
@@ -87,13 +97,11 @@ export const updateBannerImage = async (
     throw new Error("Banner not found");
   }
 
-  // Get existing banner (TypeScript now knows it exists)
   const existingBanner = currentBanners[bannerIndex];
   if (!existingBanner) {
     throw new Error("Banner not found");
   }
 
-  // Create updated banner with explicit type
   const updatedBanner: BannerImage = {
     id: existingBanner.id,
     imgLink: bannerData.imgLink ?? existingBanner.imgLink,
