@@ -2,9 +2,15 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "../../database";
 
+interface BannerImage {
+  id: number;
+  imgLink: string;
+  altText: string;
+}
+
 interface SiteSettingsAttributes {
   id: number;
-  bannerImgLink?: string | null;
+  bannerImages?: BannerImage[] | null;
   metaTitle?: string | null;
   metaDescription?: string | null;
   metaKeywords?: string | null;
@@ -24,7 +30,7 @@ type CreationAttrs = Optional<SiteSettingsAttributes, "id">;
 class SiteSettings extends Model<SiteSettingsAttributes, CreationAttrs>
   implements SiteSettingsAttributes {
   public id!: number;
-  public bannerImgLink!: string | null;
+  public bannerImages!: BannerImage[] | null;
   public metaTitle!: string | null;
   public metaDescription!: string | null;
   public metaKeywords!: string | null;
@@ -46,8 +52,8 @@ SiteSettings.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    bannerImgLink: {
-      type: DataTypes.STRING,
+    bannerImages: {
+      type: DataTypes.JSONB, // Use JSONB for PostgreSQL
       allowNull: true,
       defaultValue: null,
     },
@@ -111,3 +117,4 @@ SiteSettings.init(
 );
 
 export default SiteSettings;
+export type { BannerImage };

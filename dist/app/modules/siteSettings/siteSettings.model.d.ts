@@ -1,7 +1,12 @@
 import { Model, Optional } from "sequelize";
+interface BannerImage {
+    id: number;
+    imgLink: string;
+    altText: string;
+}
 interface SiteSettingsAttributes {
     id: number;
-    bannerImgLink?: string | null;
+    bannerImages?: BannerImage[] | null;
     metaTitle?: string | null;
     metaDescription?: string | null;
     metaKeywords?: string | null;
@@ -18,7 +23,7 @@ interface SiteSettingsAttributes {
 type CreationAttrs = Optional<SiteSettingsAttributes, "id">;
 declare class SiteSettings extends Model<SiteSettingsAttributes, CreationAttrs> implements SiteSettingsAttributes {
     id: number;
-    bannerImgLink: string | null;
+    bannerImages: BannerImage[] | null;
     metaTitle: string | null;
     metaDescription: string | null;
     metaKeywords: string | null;
@@ -33,4 +38,5 @@ declare class SiteSettings extends Model<SiteSettingsAttributes, CreationAttrs> 
     readonly updatedAt: Date;
 }
 export default SiteSettings;
+export type { BannerImage };
 //# sourceMappingURL=siteSettings.model.d.ts.map

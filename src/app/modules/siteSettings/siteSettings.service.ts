@@ -1,27 +1,125 @@
 import SiteSettings from "./siteSettings.model";
+import type { BannerImage } from "./siteSettings.model";
 
 export const getAllSettings = async () => {
-  // Return all rows (if you want single row, change to findOne)
   return await SiteSettings.findAll({ order: [["id", "ASC"]] });
 };
 
 export const getCurrentSettings = async () => {
-  // Useful if you want just the first/default settings record
   return await SiteSettings.findOne();
 };
 
 export const updateSettings = async (id: number, data: Partial<any>) => {
   const settings = await SiteSettings.findByPk(id);
   if (!settings) throw new Error("Site settings not found");
+  
+  // Validate bannerImages if provided
+  if (data.bannerImages !== undefined) {
+    if (data.bannerImages !== null && !Array.isArray(data.bannerImages)) {
+      throw new Error("bannerImages must be an array or null");
+    }
+    
+    // Validate each banner object
+    if (Array.isArray(data.bannerImages)) {
+      for (const banner of data.bannerImages) {
+        if (!banner.id || !banner.imgLink || !banner.altText) {
+          throw new Error("Each banner must have id, imgLink, and altText");
+        }
+        if (typeof banner.id !== "number") {
+          throw new Error("Banner id must be a number");
+        }
+        if (typeof banner.imgLink !== "string" || typeof banner.altText !== "string") {
+          throw new Error("Banner imgLink and altText must be strings");
+        }
+      }
+    }
+  }
+  
   await settings.update(data);
   return settings;
 };
 
-// Optionally create default row if none exists
 export const createDefaultIfNone = async () => {
   const count = await SiteSettings.count();
   if (count === 0) {
     return await SiteSettings.create({});
   }
   return null;
+};
+
+// Helper functions for banner image management
+export const addBannerImage = async (
+  settingsId: number,
+  bannerData: Omit<BannerImage, "id">
+) => {
+  const settings = await SiteSettings.findByPk(settingsId);
+  if (!settings) throw new Error("Site settings not found");
+
+  const currentBanners = settings.bannerImages || [];
+  const newId = currentBanners.length > 0 
+    ? Math.max(...currentBanners.map(b => b.id)) + 1 
+    : 1;
+
+  const newBanner: BannerImage = {
+    id: newId,
+    ...bannerData,
+  };
+
+  await settings.update({
+    bannerImages: [...currentBanners, newBanner],
+  });
+
+  return settings;
+};
+
+export const updateBannerImage = async (
+  settingsId: number,
+  bannerId: number,
+  bannerData: Partial<Omit<BannerImage, "id">>
+) => {
+  const settings = await SiteSettings.findByPk(settingsId);
+  if (!settings) throw new Error("Site settings not found");
+
+  const currentBanners = settings.bannerImages || [];
+  const bannerIndex = currentBanners.findIndex(b => b.id === bannerId);
+  
+  if (bannerIndex === -1) {
+    throw new Error("Banner not found");
+  }
+
+  // Get existing banner (TypeScript now knows it exists)
+  const existingBanner = currentBanners[bannerIndex];
+  if (!existingBanner) {
+    throw new Error("Banner not found");
+  }
+
+  // Create updated banner with explicit type
+  const updatedBanner: BannerImage = {
+    id: existingBanner.id,
+    imgLink: bannerData.imgLink ?? existingBanner.imgLink,
+    altText: bannerData.altText ?? existingBanner.altText,
+  };
+
+  currentBanners[bannerIndex] = updatedBanner;
+
+  await settings.update({ bannerImages: currentBanners });
+  return settings;
+};
+
+export const deleteBannerImage = async (
+  settingsId: number,
+  bannerId: number
+) => {
+  const settings = await SiteSettings.findByPk(settingsId);
+  if (!settings) throw new Error("Site settings not found");
+
+  const currentBanners = settings.bannerImages || [];
+  const filteredBanners = currentBanners.filter(b => b.id !== bannerId);
+
+  if (filteredBanners.length === currentBanners.length) {
+    throw new Error("Banner not found");
+  }
+
+  await settings.update({ bannerImages: filteredBanners });
+  return settings;
 };

@@ -26,7 +26,7 @@ async function main() {
         (0, associations_1.default)();
         console.log("✅ Associations setup complete");
         // Comment out sync temporarily to test connection
-        // await sequelize.sync({ alter: true });
+        await database_1.default.sync({ alter: true });
         console.log("✅ Database connection has been established successfully.");
         app_1.default.listen(port, () => {
             console.log(`🚀 App is running on port ${port}`);

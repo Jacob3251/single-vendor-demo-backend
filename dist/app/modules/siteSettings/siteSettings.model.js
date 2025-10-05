@@ -8,7 +8,7 @@ const sequelize_1 = require("sequelize");
 const database_1 = __importDefault(require("../../database"));
 class SiteSettings extends sequelize_1.Model {
     id;
-    bannerImgLink;
+    bannerImages;
     metaTitle;
     metaDescription;
     metaKeywords;
@@ -28,8 +28,8 @@ SiteSettings.init({
         primaryKey: true,
         autoIncrement: true,
     },
-    bannerImgLink: {
-        type: sequelize_1.DataTypes.STRING,
+    bannerImages: {
+        type: sequelize_1.DataTypes.JSONB, // Use JSONB for PostgreSQL
         allowNull: true,
         defaultValue: null,
     },

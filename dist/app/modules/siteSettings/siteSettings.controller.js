@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.update = exports.getAll = void 0;
+exports.deleteBanner = exports.updateBanner = exports.addBanner = exports.update = exports.getAll = void 0;
 const service = __importStar(require("./siteSettings.service"));
 const getAll = async (req, res) => {
     try {
@@ -58,4 +58,63 @@ const update = async (req, res) => {
     }
 };
 exports.update = update;
+// Add a new banner image
+const addBanner = async (req, res) => {
+    try {
+        const id = Number(req.params.id);
+        const { imgLink, altText } = req.body;
+        if (!id)
+            return res.status(400).json({ success: false, message: "Missing id param" });
+        if (!imgLink || !altText) {
+            return res.status(400).json({
+                success: false,
+                message: "imgLink and altText are required"
+            });
+        }
+        const updated = await service.addBannerImage(id, { imgLink, altText });
+        return res.status(200).json({ success: true, data: updated });
+    }
+    catch (err) {
+        return res.status(500).json({ success: false, message: err.message });
+    }
+};
+exports.addBanner = addBanner;
+// Update a specific banner image
+const updateBanner = async (req, res) => {
+    try {
+        const settingsId = Number(req.params.id);
+        const bannerId = Number(req.params.bannerId);
+        if (!settingsId || !bannerId) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing id or bannerId param"
+            });
+        }
+        const updated = await service.updateBannerImage(settingsId, bannerId, req.body);
+        return res.status(200).json({ success: true, data: updated });
+    }
+    catch (err) {
+        return res.status(500).json({ success: false, message: err.message });
+    }
+};
+exports.updateBanner = updateBanner;
+// Delete a specific banner image
+const deleteBanner = async (req, res) => {
+    try {
+        const settingsId = Number(req.params.id);
+        const bannerId = Number(req.params.bannerId);
+        if (!settingsId || !bannerId) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing id or bannerId param"
+            });
+        }
+        const updated = await service.deleteBannerImage(settingsId, bannerId);
+        return res.status(200).json({ success: true, data: updated });
+    }
+    catch (err) {
+        return res.status(500).json({ success: false, message: err.message });
+    }
+};
+exports.deleteBanner = deleteBanner;
 //# sourceMappingURL=siteSettings.controller.js.map
